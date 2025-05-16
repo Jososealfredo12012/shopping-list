@@ -4,6 +4,15 @@ const itemList = document.querySelector("#item-list");
 const itemFilter = document.querySelector("#filter");
 const clearBtn = document.querySelector("#clear");
 
+function displayItems() {
+  const itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage.forEach(item =>{
+    addItemToDOM(item)
+  })
+
+  checkUI()
+}
+
 function onAddItemSubmit(e) {
   e.preventDefault();
   const newItem = itemInput.value;
@@ -15,7 +24,7 @@ function onAddItemSubmit(e) {
 
   addItemToDOM(newItem);
 
-  addItemToStorage(newItem)
+  addItemToStorage(newItem);
 
   checkUI();
 
@@ -33,6 +42,14 @@ function addItemToDOM(item) {
 }
 
 function addItemToStorage(item) {
+  const itemsFromStorage = getItemsFromStorage(item);
+
+  itemsFromStorage.push(item);
+
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
+}
+
+function getItemsFromStorage() {
   let itemsFromStorage;
 
   if (localStorage.getItem("items") === null) {
@@ -41,9 +58,7 @@ function addItemToStorage(item) {
     itemsFromStorage = JSON.parse(localStorage.getItem("items"));
   }
 
-  itemsFromStorage.push(item)
-
-  localStorage.setItem('items', JSON.stringify(itemsFromStorage))
+  return itemsFromStorage;
 }
 
 /**
@@ -96,9 +111,12 @@ function checkUI() {
   }
 }
 
+
+
 itemForm.addEventListener("submit", onAddItemSubmit);
 itemList.addEventListener("click", removeItem);
 clearBtn.addEventListener("click", clearItems);
 itemFilter.addEventListener("input", filterItems);
+document.addEventListener('DOMContentLoaded', displayItems)
 
 checkUI();
