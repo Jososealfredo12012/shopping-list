@@ -4,9 +4,8 @@ const itemList = document.querySelector("#item-list");
 const itemFilter = document.querySelector("#filter");
 const clearBtn = document.querySelector("#clear");
 
-function addItem(e) {
+function onAddItemSubmit(e) {
   e.preventDefault();
-
   const newItem = itemInput.value;
   // Validate input
   if (newItem === "") {
@@ -14,17 +13,37 @@ function addItem(e) {
     return;
   }
 
+  addItemToDOM(newItem);
+
+  addItemToStorage(newItem)
+
+  checkUI();
+
+  itemInput.value = "";
+}
+
+function addItemToDOM(item) {
   const li = document.createElement("li");
-  li.innerHTML = `${itemInput.value}
+  li.innerHTML = `${item}
           <button class="remove-item btn-link text-red">
             <i class="fa-solid fa-xmark"></i>
           </button>`;
 
   itemList.appendChild(li);
+}
 
-  checkUI();
+function addItemToStorage(item) {
+  let itemsFromStorage;
 
-  itemInput.value = "";
+  if (localStorage.getItem("items") === null) {
+    itemsFromStorage = [];
+  } else {
+    itemsFromStorage = JSON.parse(localStorage.getItem("items"));
+  }
+
+  itemsFromStorage.push(item)
+
+  localStorage.setItem('items', JSON.stringify(itemsFromStorage))
 }
 
 /**
@@ -55,15 +74,15 @@ function clearItems() {
 function filterItems(e) {
   const items = itemList.querySelectorAll("li");
   const text = e.target.value.toLowerCase();
-  
-  items.forEach((item) =>{
-    const itemName = item.textContent.trim().toLowerCase()
+
+  items.forEach((item) => {
+    const itemName = item.textContent.trim().toLowerCase();
     if (itemName.indexOf(text) != -1) {
-      item.style.display = 'flex'
-    } else{
-      item.style.display = 'none'
+      item.style.display = "flex";
+    } else {
+      item.style.display = "none";
     }
-  })
+  });
 }
 
 function checkUI() {
@@ -77,7 +96,7 @@ function checkUI() {
   }
 }
 
-itemForm.addEventListener("submit", addItem);
+itemForm.addEventListener("submit", onAddItemSubmit);
 itemList.addEventListener("click", removeItem);
 clearBtn.addEventListener("click", clearItems);
 itemFilter.addEventListener("input", filterItems);
